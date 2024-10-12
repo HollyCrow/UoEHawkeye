@@ -3,7 +3,7 @@
 
 Currently the data loading is split into multiple projects, as listed below:
 
-## Holly:
+## Holly (Pandas version):
 ```
 UoEHawkeye/
 └── holly/
