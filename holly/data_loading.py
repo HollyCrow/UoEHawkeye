@@ -1,2 +1,5 @@
+import pandas
+
 def load_innings(path):
-    print("Loading "+path)
+    data = pandas.read_csv(path)
+    return data
