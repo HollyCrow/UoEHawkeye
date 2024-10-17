@@ -5,16 +5,15 @@ Structure of project:
 
 ```
 UoEHawkeye/
-└── holly/
-    ├── main.py
-    ├── data_loading.py
-    ├── bounce.py
-    └── data.csv
+├── src
+|   ├── main.py 	- Header file
+|   ├── bounce.py 	- main file for actual calculations
+|   └── data_loading.py	- CSV loader with pandas
+├── data
+|   └── data.csv	- Sample dataset
+├── README.md
+└── run.bat		- File to run project (works on both linux and windows)
 ```
-*main.py* - Header file.\
-*data_loader.py* - csv loader with pandas\
-*bounce.py* - main file for actual calculations\
-*data.csv* - sample dataset for games
 
 **Pandas data structure:**\
 load_innings() returns a pandas **DataFrame**.\
