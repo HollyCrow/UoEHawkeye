@@ -1,9 +1,8 @@
 # UoEHawkeye
 **Project for processing innings data for cricket matches, with the goal of mapping the bounciness of the pitch.**
 
-Currently the data loading is split into multiple projects, as listed below:
+Structure of project:
 
-## Holly (Pandas version):
 ```
 UoEHawkeye/
 └── holly/
