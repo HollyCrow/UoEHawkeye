@@ -1,5 +1,6 @@
 from data_loading import load_innings
 from bounce import calc_bounce
+from graph import plot
 import pandas as pd
 
 def main():
@@ -20,6 +21,7 @@ def main():
         data.loc[len(data.index)] = [row["BounceX"], row["BounceY"], bounce_value] # Add each calculated bounce value to the DataFrame
     data.to_csv("out.csv", index=False)
     print(data)
+    #plot(inning) # Uncomment this to run Chases plotting code. TODO: Add some sort of flag system (e.g. "./run.bat --plot")
 
 if __name__ == "__main__":
     main()
