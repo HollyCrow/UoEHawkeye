@@ -21,7 +21,7 @@ def main():
         data.loc[len(data.index)] = [row["BounceX"], row["BounceY"], bounce_value] # Add each calculated bounce value to the DataFrame
     data.to_csv("out.csv", index=False)
     print(data)
-    #plot(inning) # Uncomment this to run Chases plotting code. TODO: Add some sort of flag system (e.g. "./run.bat --plot")
+    plot(data) # Uncomment this to run Chases plotting code. TODO: Add some sort of flag system (e.g. "./run.bat --plot")
 
 if __name__ == "__main__":
     main()
