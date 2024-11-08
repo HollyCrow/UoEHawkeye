@@ -18,7 +18,9 @@ def plot(innings): # Bounces using the dataframe from main()
     currentAxis.add_patch(Rectangle((-10.06, -0.2), -0.125, 0.4, facecolor="none", ec='k', lw=2))
     
     # Draw all the bounce datapoints. abs(x-0.5)*2 to make it a bit more obvios because pretty much every datapoint is between 0.5 and 1.
-    plt.scatter(innings["BounceX"], innings["BounceY"], c="green",alpha=[abs(x - 0.5)*2 for x in innings["BounceFloat"]],label='Bounce Position')
+    #plt.scatter(innings["BounceX"], innings["BounceY"], c="green",alpha=[abs(x - 0.5)*2 for x in innings["BounceFloat"]],label='Bounce Position',s=200)
+    x = innings["BounceFloat"].to_numpy()
+    plt.scatter(innings["BounceX"], innings["BounceY"], cmap="YlGn",c=(x-np.min(x))/(np.max(x)-np.min(x)),label='Bounce Position',s=200, edgecolors='black', linewidth=1)
     plt.title("Ball Bounce Position")
     plt.xlabel("X Position (m)")
     plt.ylabel("Y Position (m)")
