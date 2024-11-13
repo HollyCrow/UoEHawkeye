@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-def plot(innings): # Bounces using the dataframe from main()
+def plot_bounce_map(innings): # Bounces using the dataframe from main()
     # 1st plot: Scatter plot for bounce positions
     
     # Fix the plot to the pitch size and dimentions
@@ -27,3 +27,14 @@ def plot(innings): # Bounces using the dataframe from main()
     plt.grid()
     plt.legend()
     plt.show()  # Show the first plot
+
+def plot_bounce_timeline(innings):
+    plt.figure()
+    plt.ylim(0, 1)
+    plt.scatter(innings["BounceTimeStamp"], innings["BounceFloat"], c=innings["BounceFloat"])
+    plt.xlabel("Time / Seconds")
+    plt.ylabel("Bounce Float / Unitless")
+    plt.title("Bouncyness Over Time")
+    plt.grid()
+    plt.legend()
+    plt.show()
