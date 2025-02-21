@@ -17,32 +17,37 @@ Coaching_columns = ["OverNumber", "BallNumber", "BowlerName", "BatsmanName", "Ba
 Trends_columns = ["Innings", "Over", "Ball", "BounceX_trends", "BounceY_trends", "BounceTime", "AccX", "AccY", "AccZ",
                   "PreVelX", "PreVelY", "PreVelZ", "PostVelX", "PostVelY", "PostVelZ", "PostAccX", "PostAccY",
                   "PostAccZ", "lastUpdateTime", "KalmanFilterType", "Predicted", "Quality", "Warning", "NoSwing",
-                  "xPositionAtBatsman", "BowlingEnd", "TRJname", "CoefficientOfRestitution", "CoefficientOfFriction?",
+                  "xPositionAtBatsman", "BowlingEnd", "TRJname", "CoefficientOfRestitution", "COF",
                   "PaceBounceRatio", "SeamMovement"]
 
 # Final order of coloumns (BEFORE ANY REMOVALS)
 # This should be reordered as needed.
-Combined_columns = ["ID", "Innings", "OverNumber", "Over", "BallNumber", "Ball",
-                    "BowlerName", "BatsmanName", "BatsmansHand", "BowlerReleaseSpeed",
-                    "BounceX", "BounceY", "BounceX_trends", "BounceY_trends",
-                    "StumpsY", "StumpsZ", "Swing", "Deviation", "RunsScored", "ShotLandingX",
-                    "ShotLandingY", "TrajectoryTime", "TrajectoryDate", "BounceVelocity",
-                    "OutOfBounceAngle", "DropAngle", "AngleLeavingBowlersHand", "ShotPlayed", "ShotType",
-
-                    "BowlerReleaseYposition", "BowlerReleaseZposition",
-
-                    "AccelerationX", "AccelerationY", "AccelerationZ", "AccX", "AccY", "AccZ",
-                    "PreVelX", "PreVelY", "PreVelZ", "PostVelX", "PostVelY", "PostVelZ", "PostAccX", "PostAccY",
-                    "PostAccZ",
-
-                    "BounceTime", "AccX", "AccY", "AccZ",
-                    "PreVelX", "PreVelY", "PreVelZ", "PostVelX", "PostVelY", "PostVelZ", "PostAccX", "PostAccY",
-                    "PostAccZ", "lastUpdateTime", "KalmanFilterType", "Predicted", "Quality", "Warning", "NoSwing",
-                    "xPositionAtBatsman", "BowlingEnd", "TRJname", "CoefficientOfRestitution", "CoefficientOfFriction?",
-                    "PaceBounceRatio", "SeamMovement"]
+Combined_columns = [
+    "ID",
+"--- 1 ---",
+    "BounceX", "BounceY", "BounceX_trends", "BounceY_trends", "BounceTime",
+    "BowlerReleaseSpeed", "BowlerReleaseYposition", "BowlerReleaseZposition", "AngleLeavingBowlersHand",
+    "StumpsY", "StumpsZ",
+    "AccelerationX", "AccelerationY", "AccelerationZ", "AccX", "AccY", "AccZ",
+    "PreVelX", "PreVelY", "PreVelZ",
+    "PostVelX", "PostVelY", "PostVelZ",
+    "PostAccX", "PostAccY", "PostAccZ",
+    "Swing", "Deviation", "ShotLandingX", "ShotLandingY", "OutOfBounceAngle", "DropAngle",
+"--- 2 ---",
+    "CoefficientOfRestitution", "COF", "SeamMovement", "PaceBounceRatio",
+"--- 3 ---",
+    "BowlingEnd", "ShotPlayed", "ShotType", "BowlerName", "BatsmanName", "BatsmansHand",
+    "RunsScored", "TrajectoryTime", "TrajectoryDate",
+"--- 4 ---",
+    "Innings", "OverNumber", "Over", "BallNumber", "Ball", "BounceVelocity",
+    "lastUpdateTime", "KalmanFilterType", "Predicted", "Quality", "Warning", "NoSwing",
+    "xPositionAtBatsman", "BowlingEnd", "TRJname"
+]
 
 # All columns that should be deleted in the distil_combined() function.
-coloumns_to_delete = ["Innings", "OverNumber", "Over", "BallNumber", "Ball"]
+combined_coloumns_to_delete = []
+trends_coloumns_to_delete = []  # these bottom two aren't implemented.
+coaching_coloumns_to_delete = []
 
 
 def get_game_id(root):  # Create a UID for games (To be added to each inning id to make it easily findable).
@@ -84,12 +89,26 @@ def distil_combined(combined, game_id, day_number):  # Rearrange and remove colu
     for inning_index, row in combined.iterrows():
         ID.append(row["ID"] + "_" + str(day_number) + "_" + game_id)  # Make ID universal.
     combined["ID"] = ID
+    # This leaves the final UID as follows:
+    #   BallNumber_OverNumber_day_GameFile
+    # This can be rearranged without much issue if need be.
+
+    combined["--- 1 ---"] = "" # Create seperator columns
+    combined["--- 2 ---"] = ""
+    combined["--- 3 ---"] = ""
+    combined["--- 4 ---"] = ""
 
     combined = combined[Combined_columns]
-    combined = combined.drop(coloumns_to_delete, axis=1)
-    # This leaves the final UID as follows:
-    #   BallNumber-OverNumber_day_GameFile
-    # This can be rearranged without much issue if need be.
+    combined = combined.drop(combined_coloumns_to_delete, axis=1)
+
+    # print(game_id)
+    # print(combined)
+    # print("uwu")
+
+    # combined['ID_reverse'] = combined['ID'].str[::-1]
+    # combined = combined.sort_values(by='ID_reverse')
+    # combined = combined.drop(["ID_reverse"], axis=1)
+
 
     return combined
 
@@ -101,7 +120,8 @@ def save_combined(combined, path):  # Save
 os.system("rm -rf distilled_data; mkdir distilled_data")
 games = {}  # Array of all game dataframes
 
-for root, subdirs, files in os.walk("bad_data"):
+for root, subdirs, files in os.walk("bad_data"):  # I would make "bad_data" name agnostic;
+    # but let's be honest, nobody else is ever going to use this code.
     innings = {}  # Array of pandas DataFrames to contain combined Coaching and Trends, to be spat back out into the directory.
     game_id = get_game_id(root)  # Get ID of game.
     for file in files:
@@ -131,6 +151,8 @@ for root, subdirs, files in os.walk("bad_data"):
                     innings[index]["Trends"] = pd.read_csv(os.path.join(root, file))
 
                 combined = combine_pair(innings[index]["Coaching"], innings[index]["Trends"])
+                # if combined.empty:
+                #     continue
                 combined = distil_combined(combined, game_id, index)
                 innings[index] = combined
 
@@ -153,4 +175,6 @@ for root, subdirs, files in os.walk("bad_data"):
     if not innings == {}:  # If there was actually a game here.
         # print(root.replace("bad_data/", ""))
         # games[root.replace("bad_data/", "").split("/")[1]] = pd.concat(innings, ignore_index=True) # Kinda unnesesary.
-        pd.concat(innings, ignore_index=True).to_csv(os.path.join("distilled_data", game_id + ".csv"), index=False)  # Save.
+        innings = dict(sorted(innings.items()))
+        pd.concat(innings, ignore_index=True).to_csv(os.path.join("distilled_data", game_id + ".csv"),
+                                                     index=False)  # Save.
