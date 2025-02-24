@@ -12,7 +12,7 @@ Coaching_columns = ["OverNumber", "BallNumber", "BowlerName", "BatsmanName", "Ba
                     "ShotLandingY", "TrajectoryTime", "TrajectoryDate", "BounceVelocity", "OutOfBounceAngle",
                     "DropAngle", "AngleLeavingBowlersHand", "ShotPlayed", "ShotType", "BowlerReleaseYposition",
                     "BowlerReleaseZposition", "AccelerationX", "AccelerationY", "AccelerationZ"]
-# I am assuming that the last coloum should be accZ
+# I am assuming that the last column should be accZ
 
 Trends_columns = ["Innings", "Over", "Ball", "BounceX_trends", "BounceY_trends", "BounceTime", "AccX", "AccY", "AccZ",
                   "PreVelX", "PreVelY", "PreVelZ", "PostVelX", "PostVelY", "PostVelZ", "PostAccX", "PostAccY",
@@ -25,7 +25,7 @@ Trends_columns = ["Innings", "Over", "Ball", "BounceX_trends", "BounceY_trends",
 Combined_columns = [
     "ID",
 "--- 1 ---",
-    "BounceX", "BounceY", "BounceX_trends", "BounceY_trends", "BounceTime",
+    "BounceX", "BounceY", "BounceX_trends", "BounceY_trends", "BounceX_Abs", "BounceY_Abs", "BounceTime",
     "BowlerReleaseSpeed", "BowlerReleaseYposition", "BowlerReleaseZposition", "AngleLeavingBowlersHand",
     "StumpsY", "StumpsZ",
     "AccelerationX", "AccelerationY", "AccelerationZ", "AccX", "AccY", "AccZ",
@@ -98,8 +98,21 @@ def distil_combined(combined, game_id, day_number):  # Rearrange and remove colu
     combined["--- 3 ---"] = ""
     combined["--- 4 ---"] = ""
 
-    combined = combined[Combined_columns]
-    combined = combined.drop(combined_coloumns_to_delete, axis=1)
+
+
+    # Create Absolute position columns
+    # combined["BounceX_Abs"] = combined.loc[:, "BounceX"]
+    # combined["BounceY_Abs"] = combined.loc[:, "BounceY"]
+    BounceX_Abs = []
+    BounceY_Abs = []
+    for inning_index, row in combined.iterrows():
+        BounceX_Abs.append((21.02 - row["BounceX"])*(row["BowlingEnd"] != 0) + row["BounceX"]*(row["BowlingEnd"] == 0)) # I watched a video about branchless programming the other night
+        BounceY_Abs.append((-row["BounceY"])*(row["BowlingEnd"] != 0) + row["BounceY"]*(row["BowlingEnd"] == 0))        # This means I am good at programming
+    combined["BounceX_Abs"] = BounceX_Abs
+    combined["BounceY_Abs"] = BounceY_Abs
+
+    combined = combined[Combined_columns] # Set order of columns
+    combined = combined.drop(combined_coloumns_to_delete, axis=1) # Delete columns.
 
     # print(game_id)
     # print(combined)
@@ -174,7 +187,7 @@ for root, subdirs, files in os.walk("bad_data"):  # I would make "bad_data" name
 
     if not innings == {}:  # If there was actually a game here.
         # print(root.replace("bad_data/", ""))
-        # games[root.replace("bad_data/", "").split("/")[1]] = pd.concat(innings, ignore_index=True) # Kinda unnesesary.
+        # games[root.replace("bad_data/", "").split("/")[1]] = pd.concat(innings, ignore_index=True) # Kinda unnecessary.
         innings = dict(sorted(innings.items()))
         pd.concat(innings, ignore_index=True).to_csv(os.path.join("distilled_data", game_id + ".csv"),
                                                      index=False)  # Save.
